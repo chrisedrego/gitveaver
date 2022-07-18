@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -15,10 +14,9 @@ import (
 
 	"github.com/chrisedrego/gitveaver/utils"
 	"github.com/google/go-github/github"
-	"golang.org/x/oauth2"
 )
 
-type githubpayload struct {
+type GithubPayload struct {
 	// Github Payload
 	Ref        string `json:"ref"`
 	Before     string `json:"before"`
@@ -241,6 +239,11 @@ type error interface {
 var configFile string
 var githubToken string
 
+func handleErr(err string) {
+	_, _ = fmt.Fprintln(os.Stderr, err)
+	os.Exit(1)
+}
+
 func CheckIsContributor(client *github.Client, ctx context.Context, owner, repo string, userlist []string) (bool, error) {
 	// Verify the github Users are Contributors
 	var err error
@@ -252,7 +255,7 @@ func CheckIsContributor(client *github.Client, ctx context.Context, owner, repo 
 			break
 		}
 		if err != nil {
-			fmt.Println(err)
+			handleErr(err.Error())
 		}
 	}
 	return isContributor, err
@@ -262,7 +265,7 @@ func getRawVeaver(client *github.Client, ctx context.Context, owner, repo, filep
 	// Get Contents of GitVeaver Configuration
 	FileContent, _, _, err := client.Repositories.GetContents(ctx, owner, repo, filepath, &RepGetOptions)
 	if err != nil {
-		fmt.Println(err)
+		handleErr(err.Error())
 	}
 	rawDecodedData, err := base64.StdEncoding.DecodeString(*FileContent.Content)
 	if err != nil {
@@ -372,7 +375,7 @@ func CheckBranchEval(context context.Context, client *github.Client, owner, repo
 	return
 }
 
-// func PRCreation(context context.Context, client *github.Client, v veaver, r githubpayload, org_name, repo_name string) {
+// func PRCreation(context context.Context, client *github.Client, v veaver, r GithubPayload, org_name, repo_name string) {
 // // Creating Github Context
 // context := context.Background()
 // githubtoken := os.Getenv("GITHUBTOKEN")
@@ -406,7 +409,7 @@ func CheckBranchEval(context context.Context, client *github.Client, owner, repo
 // }
 // }
 
-func ConditionalPRCheck(ConditionPRFlag bool, resp githubpayload, PrefixCode string) (StatusCode bool) {
+func ConditionalPRCheck(ConditionPRFlag bool, resp GithubPayload, PrefixCode string) (StatusCode bool) {
 	// Check Condition PR Flag: if Condition PR Flag enabled will check if the commit has specific tag as a
 	StatusCode = ConditionPRFlag
 	if ConditionPRFlag {
@@ -428,47 +431,6 @@ func ConditionalPRCheck(ConditionPRFlag bool, resp githubpayload, PrefixCode str
 // 	}
 // 	return c
 // }
-
-func RequestHandler(resp http.ResponseWriter, req *http.Request) {
-	// handles request for GitVeaver
-
-	// extract Github payload for events from webhook
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		panic(err)
-	}
-	var payload githubpayload
-	err = json.Unmarshal(body, &payload)
-	if err != nil {
-		panic(err)
-	}
-	// extract branch details
-	RefPushedBranch := (string(payload.Ref))
-	// PushedBranch := GetBranch(string(payload.Ref))
-
-	context := context.Background()
-
-	tokenService := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: utils.GithubToken},
-	)
-	tokenClient := oauth2.NewClient(context, tokenService)
-
-	// Intiating Github Client
-	client := github.NewClient(tokenClient)
-
-	RepGetOptions := github.RepositoryContentGetOptions{
-		Ref: RefPushedBranch,
-	}
-
-	// Getting Repo & Owner details
-	Owner, Repo := GetRepoDetails((string(payload.Repository.FullName)))
-
-	// Retrieve Configuration Data
-	var VeaverData *Veaver
-	VeaverRawPayload := getRawVeaver(client, context, Owner, Repo, utils.ConfigFile, RefPushedBranch, RepGetOptions)
-	fmt.Println(VeaverData, VeaverRawPayload)
-	VeaverData.EvalChecker()
-}
 
 func BackMerge(VeaverData Veaver, VeaverRawPayload []byte) {
 	// VeaverData.getConf(VeaverRawPayload)
