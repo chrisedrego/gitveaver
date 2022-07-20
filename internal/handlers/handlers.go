@@ -7,7 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/chrisedrego/gitveaver/cmd/gitveaver"
+	"github.com/chrisedrego/gitveaver/pkg/git"
+	"github.com/chrisedrego/gitveaver/pkg/veave"
 	"github.com/chrisedrego/gitveaver/utils"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -21,7 +22,7 @@ func RequestHandler(resp http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	var payload gitveaver.GithubPayload
+	var payload veave.GithubPayload
 	err = json.Unmarshal(body, &payload)
 	if err != nil {
 		panic(err)
@@ -45,11 +46,11 @@ func RequestHandler(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	// Getting Repo & Owner details
-	Owner, Repo := GetRepoDetails((string(payload.Repository.FullName)))
+	Owner, Repo := git.GetRepoDetails((string(payload.Repository.FullName)))
 
 	// Retrieve Configuration Data
-	var VeaverData *Veaver
-	VeaverRawPayload := getRawVeaver(client, context, Owner, Repo, utils.ConfigFile, RefPushedBranch, RepGetOptions)
+	var VeaverData *veave.Veaver
+	VeaverRawPayload := veave.GetRawVeaver(client, context, Owner, Repo, utils.ConfigFile, RefPushedBranch, RepGetOptions)
 	fmt.Println(VeaverData, VeaverRawPayload)
 	VeaverData.EvalChecker()
 }
