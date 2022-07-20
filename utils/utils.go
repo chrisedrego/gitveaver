@@ -17,6 +17,8 @@ func FlagCheck() error {
 	ConfigFile = os.Getenv("CONFIGFILE")
 	if ConfigFile == "" {
 		ConfigFile = "/configs/veave.yaml"
+	} else {
+		fmt.Println("Default Configuration:", ConfigFile)
 	}
 	GithubToken = os.Getenv("GITHUBTOKEN")
 	if GithubToken == "" {
