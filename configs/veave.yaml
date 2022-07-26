@@ -29,3 +29,13 @@ rules:
       - ".pipeline"
       exclude_file: 
       - ".gitignore"
+
+  - name: "sync-source-destination"
+    mode: in-sync
+    source_branch: master
+    destination_rules:
+    - name: "dev"
+      exclude dir:
+      - ".pipeline"
+      exclude_file: 
+      - ".gitignore"

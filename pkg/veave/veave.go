@@ -244,9 +244,10 @@ func (veave *Veaver) EvalChecker() {
 		mode := veave.Rules[index].Mode
 		switch mode {
 		case "backmerge":
-
 			fmt.Println("mode: backmerge")
 		case "sync":
+			fmt.Println("mode: sync")
+		case "in-sync":
 			fmt.Println("mode: sync")
 		}
 	}
