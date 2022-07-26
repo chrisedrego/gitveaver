@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
 	"github.com/chrisedrego/gitveaver/utils"
 	"github.com/google/go-github/github"
+	"gopkg.in/yaml.v2"
 )
 
 type GithubPayload struct {
@@ -255,13 +257,13 @@ func CheckVeavied(data string) bool {
 	return strings.HasPrefix(data, GV_PRFLag)
 }
 
-// func GetVeaverData(rawdata []byte) *veaver {
-// 	// Get Veaver Data Struct
-// 	// var data *veaver
-// 	// data_err := yaml.Unmarshal(rawdata, &data)
+func GetVeaverData(rawdata []byte) *Veaver {
+	// Get Veaver Data Struct
+	var data *Veaver
+	data_err := yaml.Unmarshal(rawdata, &data)
 
-// 	// if data_err != nil {
-// 	// 	log.Fatal(data_err)
-// 	// }
-// 	// return data
-// }
+	if data_err != nil {
+		log.Fatal(data_err)
+	}
+	return data
+}
