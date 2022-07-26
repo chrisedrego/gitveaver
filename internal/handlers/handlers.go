@@ -51,6 +51,7 @@ func RequestHandler(resp http.ResponseWriter, req *http.Request) {
 	// Retrieve Configuration Data
 	var VeaverData *veave.Veaver
 	VeaverRawPayload := veave.GetRawVeaver(client, context, Owner, Repo, utils.ConfigFile, RefPushedBranch, RepGetOptions)
+	VeaverData = veave.GetVeaverData(VeaverRawPayload)
 	fmt.Println(VeaverData, VeaverRawPayload)
 	VeaverData.EvalChecker()
 }
