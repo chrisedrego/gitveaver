@@ -12,6 +12,51 @@ import (
 	"github.com/google/go-github/github"
 )
 
+func InSync() {
+	// InSync between same
+	// git clone
+	// git merge source to destination
+	// git commit && git push
+}
+
+func DeleteBranch() {
+
+}
+
+func RemoveBranchProtection(client *github.Client, ctx context.Context, owner, repo, branch string) (*Response, error) {
+	u := fmt.Sprintf("repos/%v/%v/git/refs/heads/%v", owner, repo, branch)
+	req, err := client.NewRequest("DELETE", u, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// // TODO: remove custom Accept header when this API fully launches
+	// req.Header.Set("Accept", mediaTypeRequiredApprovingReviewsPreview)
+
+	return client.Do(ctx, req, nil)
+}
+
+func InSyncForce(client *github.Client, ctx context.Context, owner, repo, source string, destination_branches []string) {
+	// In-Sync-Force (Rename-name-old-hash to create a new branch from source branch)
+	// Check if Destination & Source Branch existes
+	branches := append(destination_branches, source)
+	response, _ := CheckBranchEval(ctx, client, owner, repo, branches)
+	for _, branch := range destination_branches {
+		RemoveBranchProtection(client, ctx, owner, repo, branch)
+	}
+	if response {
+		RemoveBranchProtection
+		return
+	} else {
+		return
+	}
+
+}
+
+func Remove() {
+	// git remove
+}
+
 func CheckIsContributor(client *github.Client, ctx context.Context, owner, repo string, userlist []string) (bool, error) {
 	// Verify the github Users are Contributors
 	var err error
@@ -68,11 +113,12 @@ func OpenPREval(context context.Context, client *github.Client, OrgName, RepoNam
 	return
 }
 
-func CheckBranchEval(context context.Context, client *github.Client, owner, repo string, branches []string) (BranchExistFlag bool) {
+func CheckBranchEval(context context.Context, client *github.Client, owner, repo string, branches []string) (BranchExistFlag bool, BranchNotFound string) {
 	for _, branch := range branches {
 		_, resp, err := client.Repositories.GetBranch(context, owner, repo, branch)
 		if (err != nil) && (resp.StatusCode == 404) {
 			BranchExistFlag = false
+			BranchNotFound = branch
 			return
 		} else {
 			BranchExistFlag = true

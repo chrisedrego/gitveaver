@@ -30,12 +30,26 @@ rules:
       exclude_file: 
       - ".gitignore"
 
-  - name: "sync-source-destination"
+  - name: "sync-master-to-demo"
     mode: in-sync
     source_branch: master
     destination_rules:
-    - name: "dev"
+    - name: "demo"
       exclude dir:
       - ".pipeline"
       exclude_file: 
       - ".gitignore"
+
+  - name: "sync-master-to-v1"
+    mode: in-sync-force
+    source_branch: master
+    branch_protection: "disabled"
+    destination_branches:
+    - "one"
+    - "two"
+  
+  - name: "remove-credentials"
+    mode: removal
+    source_branch: master
+    path:
+    - "credentials"
