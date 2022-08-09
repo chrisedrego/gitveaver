@@ -49,9 +49,9 @@ func RequestHandler(resp http.ResponseWriter, req *http.Request) {
 	Owner, Repo := git.GetRepoDetails((string(payload.Repository.FullName)))
 
 	// Retrieve Configuration Data
-	var VeaverData *veave.Veaver
-	VeaverRawPayload := veave.GetRawVeaver(client, context, Owner, Repo, utils.ConfigFile, RefPushedBranch, RepGetOptions)
-	VeaverData = veave.GetVeaverData(VeaverRawPayload)
+	var VeaverData *utils.Veaver
+	VeaverRawPayload := utils.GetRawVeaver(client, context, Owner, Repo, utils.ConfigFile, RefPushedBranch, RepGetOptions)
+	VeaverData = (*utils.Veaver)(utils.GetVeaverData(VeaverRawPayload))
 	fmt.Println(VeaverData, VeaverRawPayload)
-	VeaverData.EvalChecker()
+	utils.EvalChecker(client, VeaverData, context, Owner, Repo)
 }

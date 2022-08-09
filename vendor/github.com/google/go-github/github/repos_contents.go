@@ -70,7 +70,7 @@ func (r *RepositoryContent) GetContent() (string, error) {
 	if r.Encoding != nil {
 		encoding = *r.Encoding
 	}
-	fmt.Println(encoding)
+
 	switch encoding {
 	case "base64":
 		c, err := base64.StdEncoding.DecodeString(*r.Content)

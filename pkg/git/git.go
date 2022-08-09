@@ -45,7 +45,7 @@ func InSyncForce(client *github.Client, ctx context.Context, owner, repo, source
 		RemoveBranchProtection(client, ctx, owner, repo, branch)
 	}
 	if response {
-		RemoveBranchProtection
+
 		return
 	} else {
 		return
@@ -99,9 +99,9 @@ func OpenPREval(context context.Context, client *github.Client, OrgName, RepoNam
 
 	// Check if there is any PR that is already opened for the same source destination branches to avoid recreation
 	for index := range OpenPRList {
-		fmt.Println(*OpenPRList[index].ID, *OpenPRList[index].Number, *OpenPRList[index].State, *OpenPRList[index].Title, veave.CheckVeavied(*OpenPRList[index].Title))
-		if veave.CheckVeavied(*OpenPRList[index].Title) == true {
-			isVeaveFlag := veave.CheckVeavied(*OpenPRList[index].Title)
+		fmt.Println(*OpenPRList[index].ID, *OpenPRList[index].Number, *OpenPRList[index].State, *OpenPRList[index].Title, utils.CheckVeavied(*OpenPRList[index].Title))
+		if utils.CheckVeavied(*OpenPRList[index].Title) == true {
+			isVeaveFlag := utils.CheckVeavied(*OpenPRList[index].Title)
 			if isVeaveFlag {
 				OpenPRFlag = false
 			} else {

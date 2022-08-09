@@ -7,6 +7,8 @@ github.com/google/go-github/github
 # github.com/google/go-querystring v1.1.0
 ## explicit; go 1.10
 github.com/google/go-querystring/query
+# github.com/kisielk/godepgraph v0.0.0-20220719222756-573dc89cecc8
+## explicit
 # golang.org/x/net v0.0.0-20220728153142-1f511ac62c11
 ## explicit; go 1.17
 golang.org/x/net/context

@@ -23,6 +23,7 @@ type Reviewers struct {
 }
 
 // RequestReviewers creates a review request for the provided reviewers for the specified pull request.
+//
 // GitHub API docs: https://developer.github.com/v3/pulls/review_requests/#create-a-review-request
 func (s *PullRequestsService) RequestReviewers(ctx context.Context, owner, repo string, number int, reviewers ReviewersRequest) (*PullRequest, *Response, error) {
 	u := fmt.Sprintf("repos/%s/%s/pulls/%d/requested_reviewers", owner, repo, number)

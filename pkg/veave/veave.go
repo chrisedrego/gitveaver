@@ -1,17 +1,7 @@
 package veave
 
 import (
-	"context"
-	"encoding/base64"
-	"fmt"
-	"log"
-	"strings"
 	"time"
-
-	"github.com/chrisedrego/gitveaver/pkg/git"
-	"github.com/chrisedrego/gitveaver/utils"
-	"github.com/google/go-github/github"
-	"gopkg.in/yaml.v2"
 )
 
 type Veaver struct {
@@ -227,53 +217,4 @@ type GithubPayload struct {
 		Removed  []interface{} `yaml:"removed"`
 		Modified []interface{} `yaml:"modified"`
 	} `yaml:"head_commit"`
-}
-
-func GetRawVeaver(client *github.Client, ctx context.Context, owner, repo, filepath, branch string, RepGetOptions github.RepositoryContentGetOptions) []byte {
-	// Get Contents of GitVeaver Configuration
-	FileContent, _, _, err := client.Repositories.GetContents(ctx, owner, repo, filepath, &RepGetOptions)
-	if err != nil {
-		utils.HandleErr(err.Error())
-	}
-	rawDecodedData, err := base64.StdEncoding.DecodeString(*FileContent.Content)
-	if err != nil {
-		panic(err)
-	}
-	return rawDecodedData
-}
-
-func (veave *Veaver) EvalChecker(client *github.Client, ctx context.Context, owner, repo, source string, destination_branches []string) {
-	for index, _ := range veave.Rules {
-		mode := veave.Rules[index].Mode
-		switch mode {
-		case "backmerge":
-			fmt.Println("mode: backmerge")
-		case "sync":
-			fmt.Println("mode: sync")
-		case "in-sync":
-			fmt.Println("mode: in-sync")
-		case "in-sync-force":
-			fmt.Println("mode: in-sync-force")
-		case "removal":
-			fmt.Println("mode: removal")
-			git.InSyncForce(client, ctx, owner, repo, source, destination_branches)
-
-		}
-	}
-}
-
-func CheckVeavied(data string) bool {
-	var GV_PRFLag string
-	return strings.HasPrefix(data, GV_PRFLag)
-}
-
-func GetVeaverData(rawdata []byte) *Veaver {
-	// Get Veaver Data Struct
-	var data *Veaver
-	data_err := yaml.Unmarshal(rawdata, &data)
-
-	if data_err != nil {
-		log.Fatal(data_err)
-	}
-	return data
 }
