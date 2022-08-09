@@ -31,5 +31,4 @@ WORKDIR /home/appuser/app
 # 8000 for HTTP; 8443 for HTTPS;
 EXPOSE 8000
 EXPOSE 8443
-
 CMD ["./appbin"]
