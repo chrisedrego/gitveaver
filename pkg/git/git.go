@@ -23,7 +23,7 @@ func DeleteBranch() {
 
 }
 
-func RemoveBranchProtection(client *github.Client, ctx context.Context, owner, repo, branch string) (*Response, error) {
+func RemoveBranchProtection(client *github.Client, ctx context.Context, owner, repo, branch string) (*github.Response, error) {
 	u := fmt.Sprintf("repos/%v/%v/git/refs/heads/%v", owner, repo, branch)
 	req, err := client.NewRequest("DELETE", u, nil)
 	if err != nil {
@@ -41,11 +41,17 @@ func InSyncForce(client *github.Client, ctx context.Context, owner, repo, source
 	// Check if Destination & Source Branch existes
 	branches := append(destination_branches, source)
 	response, _ := CheckBranchEval(ctx, client, owner, repo, branches)
-	for _, branch := range destination_branches {
-		RemoveBranchProtection(client, ctx, owner, repo, branch)
-	}
+
 	if response {
-		RemoveBranchProtection
+		for _, branch := range destination_branches {
+			resp, err := RemoveBranchProtection(client, ctx, owner, repo, branch)
+			if err != nil {
+				fmt.Println("Error Occured:", err)
+				return
+			} else {
+				fmt.Print(resp.Status)
+			}
+		}
 		return
 	} else {
 		return
