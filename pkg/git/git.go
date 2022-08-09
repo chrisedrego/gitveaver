@@ -41,17 +41,11 @@ func InSyncForce(client *github.Client, ctx context.Context, owner, repo, source
 	// Check if Destination & Source Branch existes
 	branches := append(destination_branches, source)
 	response, _ := CheckBranchEval(ctx, client, owner, repo, branches)
-
+	for _, branch := range destination_branches {
+		RemoveBranchProtection(client, ctx, owner, repo, branch)
+	}
 	if response {
-		for _, branch := range destination_branches {
-			resp, err := RemoveBranchProtection(client, ctx, owner, repo, branch)
-			if err != nil {
-				fmt.Println("Error Occured:", err)
-				return
-			} else {
-				fmt.Print(resp.Status)
-			}
-		}
+		RemoveBranchProtection
 		return
 	} else {
 		return

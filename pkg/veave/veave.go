@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/chrisedrego/gitveaver/pkg/git"
 	"github.com/chrisedrego/gitveaver/utils"
 	"github.com/google/go-github/github"
 	"gopkg.in/yaml.v2"
@@ -241,7 +242,7 @@ func GetRawVeaver(client *github.Client, ctx context.Context, owner, repo, filep
 	return rawDecodedData
 }
 
-func (veave *Veaver) EvalChecker() {
+func (veave *Veaver) EvalChecker(client *github.Client, ctx context.Context, owner, repo, source string, destination_branches []string) {
 	for index, _ := range veave.Rules {
 		mode := veave.Rules[index].Mode
 		switch mode {
@@ -255,6 +256,8 @@ func (veave *Veaver) EvalChecker() {
 			fmt.Println("mode: in-sync-force")
 		case "removal":
 			fmt.Println("mode: removal")
+			git.InSyncForce(client, ctx, owner, repo, source, destination_branches)
+
 		}
 	}
 }
