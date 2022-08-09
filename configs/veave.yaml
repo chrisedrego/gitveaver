@@ -1,45 +1,4 @@
 rules:
-  - name: "backmerge-master-to-dev-staging"
-    mode: backmerge
-    source_branch: master
-    destination_branch:
-    - "dev"
-    - "staging"
-    conditional:
-      enabled: true
-      tag_prefix: "GV"
-    reviewers:
-    - "rishinair19"
-    - "gauravwadghule"
-    title: "Back Merge"
-    description: "Back merge"
-    slack_notification:
-      enabled: true
-      slack_id:
-      - "<@U02ASKNT1ND>"
-      - "<@U02943ZBDCK>"
-
-  - name: "sync-source-destination"
-    mode: sync
-    source_branch: master
-    destination_repo: www.github.com/REPO
-    destination_rules:
-    - name: "dev"
-      exclude dir:
-      - ".pipeline"
-      exclude_file: 
-      - ".gitignore"
-
-  - name: "sync-master-to-demo"
-    mode: in-sync
-    source_branch: master
-    destination_rules:
-    - name: "demo"
-      exclude dir:
-      - ".pipeline"
-      exclude_file: 
-      - ".gitignore"
-
   - name: "sync-master-to-v1"
     mode: in-sync-force
     source_branch: master
@@ -47,9 +6,3 @@ rules:
     destination_branches:
     - "one"
     - "two"
-  
-  - name: "remove-credentials"
-    mode: removal
-    source_branch: master
-    path:
-    - "credentials"
