@@ -19,8 +19,49 @@ func InSync() {
 	// git commit && git push
 }
 
-func DeleteBranch() {
+func DeleteBranch(client *github.Client, ctx context.Context, owner, repo, branch string) (*github.Response, error) {
+	// Delete Branch
+	u := fmt.Sprintf("repos/%v/%v/git/refs/heads/%v", owner, repo, branch)
+	req, err := client.NewRequest("DELETE", u, nil)
+	if err != nil {
+		return nil, err
+	}
 
+	// // TODO: remove custom Accept header when this API fully launches
+	// req.Header.Set("Accept", mediaTypeRequiredApprovingReviewsPreview)
+
+	return client.Do(ctx, req, nil)
+}
+
+func CreateBranch(client *github.Client, ctx context.Context, owner, repo, source_branch, destination_branch string) {
+	// (*github.Response, error)
+	// Get SHA from source branch
+	service := client.Git
+	fmt.Println("Service:", service, "ctx", ctx, "Owner", owner, "Repo", repo)
+	ref, resp, error := service.GetRef(ctx, owner, repo, "heads/"+source_branch)
+	SHA := ref.Object.GetSHA()
+
+	if error != nil {
+		fmt.Println("Status Code:", resp.StatusCode, "error:", error)
+	}
+	fmt.Println("SHA:", SHA, "Ref:", ref.GetRef())
+	*ref.Ref = "refs/heads/" + destination_branch
+	fmt.Println("Ref", *ref.Ref)
+	ref, resp, err := service.CreateRef(ctx, owner, repo, ref)
+	if err != nil {
+		fmt.Println("Status Code:", resp.StatusCode, "error:", error)
+	}
+
+	// u := fmt.Sprintf("repos/%v/%v/git/refs/heads/%v", owner, repo, source)
+	// req, err := client.NewRequest("POST", u, nil)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// TODO: remove custom Accept header when this API fully launches
+	// req.Header.Set("Accept", mediaTypeRequiredApprovingReviewsPreview)
+
+	// return client.Do(ctx, req, nil)
 }
 
 func RemoveBranchProtection(client *github.Client, ctx context.Context, owner, repo, branch string) (*github.Response, error) {
@@ -36,25 +77,62 @@ func RemoveBranchProtection(client *github.Client, ctx context.Context, owner, r
 	return client.Do(ctx, req, nil)
 }
 
-func InSyncForce(client *github.Client, ctx context.Context, owner, repo, source string, destination_branches []string) {
+func InSyncForce(client *github.Client, ctx context.Context, owner, repo, source_branch string, destination_branches []string, branchProtectionFlag string) {
 	// In-Sync-Force (Rename-name-old-hash to create a new branch from source branch)
 	// Check if Destination & Source Branch existes
-	branches := append(destination_branches, source)
-	response, _ := CheckBranchEval(ctx, client, owner, repo, branches)
-	for _, branch := range destination_branches {
-		RemoveBranchProtection(client, ctx, owner, repo, branch)
-	}
+	branches := append(destination_branches, source_branch)
+	response, BranchNotFound := CheckBranchEval(ctx, client, owner, repo, branches)
+	// if branchProtectionFlag == "disabled" {
+	// 	for _, branch := range destination_branches {
+	// 		RemoveBranchProtection(client, ctx, owner, repo, branch)
+	// 	}
+	// }
+	fmt.Println("Response", response)
 	if response {
-
+		// Delete the existing branch
+		for _, destination_branch := range destination_branches {
+			DeleteBranch(client, ctx, owner, repo, destination_branch)
+			fmt.Println("Destination Branch:", destination_branch)
+			CreateBranch(client, ctx, owner, repo, source_branch, destination_branch)
+		}
 		return
 	} else {
-		return
+		panic("Branches not found:" + BranchNotFound)
 	}
 
 }
 
-func Remove() {
-	// git remove
+func Remove(client *github.Client, ctx context.Context, owner, repo string, veave *veave.Veaver, RepGetOptions github.RepositoryContentGetOptions) {
+	// Direct get the file path and perform delete operation on that path
+	// adding to .gitignore files list
+	for index, _ := range veave.Rules {
+
+	}
+	RepGetOptions.Ref = branch
+	FileContent, _, _, err := client.Repositories.GetContents(ctx, owner, repo, filepath, &RepGetOptions)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	var CommitMessage, SHA, Branch *string
+	var Author *github.CommitAuthor
+	var CommitAuthor *github.CommitAuthor
+
+	DeleteFileOpts := &github.RepositoryContentFileOptions{
+		Message:   CommitMessage,
+		Content:   []byte{},
+		SHA:       SHA,
+		Branch:    Branch,
+		Author:    Author,
+		Committer: CommitAuthor,
+	}
+	DeleteFileOpts.SHA = FileContent.SHA
+	fmt.Println(DeleteFileOpts)
+	// FileContent.SHA
+	DeleteContent, _, _, error := client.Repositories.DeleteFile(ctx, owner, repo, filepath, DeleteFileOpts)
+	if error != nil {
+		fmt.Println("Error:", error)
+	}
+
 }
 
 func CheckIsContributor(client *github.Client, ctx context.Context, owner, repo string, userlist []string) (bool, error) {
@@ -119,6 +197,8 @@ func CheckBranchEval(context context.Context, client *github.Client, owner, repo
 		if (err != nil) && (resp.StatusCode == 404) {
 			BranchExistFlag = false
 			BranchNotFound = branch
+			fmt.Println("Branch Name:" + BranchNotFound + " not found.")
+			fmt.Println("Error:", err)
 			return
 		} else {
 			BranchExistFlag = true
