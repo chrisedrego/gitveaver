@@ -51,5 +51,8 @@ rules:
   - name: "remove-credentials"
     mode: removal
     source_branch: master
+    message: "Removal GitVeaver Secure Shield."
+    author_id: chrisedrego
+    author_email: chrisedrego@gmail.com
     path:
     - "credentials"

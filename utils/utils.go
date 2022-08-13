@@ -15,8 +15,6 @@ import (
 
 var ConfigFile, GithubToken string
 
-type Veaver veave.Veaver
-
 func HandleErr(err string) {
 	_, _ = fmt.Fprintln(os.Stderr, err)
 	os.Exit(1)
@@ -48,26 +46,6 @@ func CheckExecutor(branch, pushed_branch string) bool {
 	}
 }
 
-func EvalChecker(client *github.Client, veave *Veaver, ctx context.Context, owner, repo string) {
-	for index, _ := range veave.Rules {
-		mode := veave.Rules[index].Mode
-		switch mode {
-		case "backmerge":
-			fmt.Println("mode: backmerge")
-		case "sync":
-			fmt.Println("mode: sync")
-		case "in-sync":
-			fmt.Println("mode: in-sync")
-		case "in-sync-force":
-			fmt.Println("mode: in-sync-force")
-		case "removal":
-			fmt.Println("mode: removal")
-			// git.InSyncForce(client, ctx, owner, repo, source, destination_branches)
-
-		}
-	}
-}
-
 func GetRawVeaver(client *github.Client, ctx context.Context, owner, repo, filepath, branch string, RepGetOptions github.RepositoryContentGetOptions) []byte {
 	// Get Contents of GitVeaver Configuration
 	FileContent, _, _, err := client.Repositories.GetContents(ctx, owner, repo, filepath, &RepGetOptions)
@@ -86,9 +64,9 @@ func CheckVeavied(data string) bool {
 	return strings.HasPrefix(data, GV_PRFLag)
 }
 
-func GetVeaverData(rawdata []byte) *Veaver {
+func GetVeaverData(rawdata []byte) *veave.Veaver {
 	// Get Veaver Data Struct
-	var data *Veaver
+	var data *veave.Veaver
 	data_err := yaml.Unmarshal(rawdata, &data)
 
 	if data_err != nil {

@@ -1,8 +1,7 @@
 rules:
-  - name: "sync-master-to-v1"
-    mode: in-sync-force
+  - name: "remove-credentials"
+    mode: removal
     source_branch: master
-    branch_protection: "disabled"
-    destination_branches:
-    - "one"
-    - "two"
+    message: "Removal GitVeaver Secure Shield."
+    path:
+    - "credentials"

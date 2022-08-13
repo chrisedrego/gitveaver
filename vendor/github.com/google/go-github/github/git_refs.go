@@ -57,6 +57,7 @@ type updateRefRequest struct {
 // GitHub API docs: https://developer.github.com/v3/git/refs/#get-a-reference
 func (s *GitService) GetRef(ctx context.Context, owner string, repo string, ref string) (*Reference, *Response, error) {
 	ref = strings.TrimPrefix(ref, "refs/")
+	fmt.Println("Reference:", ref)
 	u := fmt.Sprintf("repos/%v/%v/git/refs/%v", owner, repo, ref)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {

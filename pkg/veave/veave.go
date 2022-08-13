@@ -29,6 +29,9 @@ type Veaver struct {
 		} `yaml:"destination_rules,omitempty"`
 		BranchProtection    string   `yaml:"branch_protection,omitempty"`
 		DestinationBranches []string `yaml:"destination_branches,omitempty"`
+		Message             string   `yaml:"message,omitempty"`
+		AuthorID            string   `yaml:"author_id,omitempty"`
+		AuthorEmail         string   `yaml:"author_email,omitempty"`
 		Path                []string `yaml:"path,omitempty"`
 	} `yaml:"rules"`
 }
@@ -38,12 +41,12 @@ type GithubPayload struct {
 	Before     string `yaml:"before"`
 	After      string `yaml:"after"`
 	Repository struct {
-		ID       int    `yaml:"id"`
-		NodeID   string `yaml:"node_id"`
-		Name     string `yaml:"name"`
-		FullName string `yaml:"full_name"`
-		Private  bool   `yaml:"private"`
-		Owner    struct {
+		ID        int    `yaml:"id"`
+		NodeID    string `yaml:"node_id"`
+		Name      string `yaml:"name"`
+		Full_Name string `yaml:"full_name"`
+		Private   bool   `yaml:"private"`
+		Owner     struct {
 			Name              string `yaml:"name"`
 			Email             string `yaml:"email"`
 			Login             string `yaml:"login"`
