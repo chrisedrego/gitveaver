@@ -5,35 +5,37 @@ import (
 )
 
 type Veaver struct {
-	Rules []struct {
-		Name              string   `yaml:"name"`
-		Mode              string   `yaml:"mode"`
-		SourceBranch      string   `yaml:"source_branch"`
-		DestinationBranch []string `yaml:"destination_branch,omitempty"`
-		Conditional       struct {
-			Enabled   bool   `yaml:"enabled"`
-			TagPrefix string `yaml:"tag_prefix"`
-		} `yaml:"conditional,omitempty"`
-		Reviewers         []string `yaml:"reviewers,omitempty"`
-		Title             string   `yaml:"title,omitempty"`
-		Description       string   `yaml:"description,omitempty"`
-		SlackNotification struct {
-			Enabled bool     `yaml:"enabled"`
-			SlackID []string `yaml:"slack_id"`
-		} `yaml:"slack_notification,omitempty"`
-		DestinationRepo  string `yaml:"destination_repo,omitempty"`
-		DestinationRules []struct {
-			Name        string   `yaml:"name"`
-			ExcludeDir  []string `yaml:"exclude dir"`
-			ExcludeFile []string `yaml:"exclude_file"`
-		} `yaml:"destination_rules,omitempty"`
-		BranchProtection    string   `yaml:"branch_protection,omitempty"`
-		DestinationBranches []string `yaml:"destination_branches,omitempty"`
-		Message             string   `yaml:"message,omitempty"`
-		AuthorID            string   `yaml:"author_id,omitempty"`
-		AuthorEmail         string   `yaml:"author_email,omitempty"`
-		Path                []string `yaml:"path,omitempty"`
-	} `yaml:"rules"`
+	Rules []Rules `yaml:"rules"`
+}
+
+type Rules struct {
+	Name              string   `yaml:"name"`
+	Mode              string   `yaml:"mode"`
+	SourceBranch      string   `yaml:"source_branch"`
+	DestinationBranch []string `yaml:"destination_branch,omitempty"`
+	Conditional       struct {
+		Enabled   bool   `yaml:"enabled"`
+		TagPrefix string `yaml:"tag_prefix"`
+	} `yaml:"conditional,omitempty"`
+	Reviewers         []string `yaml:"reviewers,omitempty"`
+	Title             string   `yaml:"title,omitempty"`
+	Description       string   `yaml:"description,omitempty"`
+	SlackNotification struct {
+		Enabled bool     `yaml:"enabled"`
+		SlackID []string `yaml:"slack_id"`
+	} `yaml:"slack_notification,omitempty"`
+	DestinationRepo  string `yaml:"destination_repo,omitempty"`
+	DestinationRules []struct {
+		Name        string   `yaml:"name"`
+		ExcludeDir  []string `yaml:"exclude dir"`
+		ExcludeFile []string `yaml:"exclude_file"`
+	} `yaml:"destination_rules,omitempty"`
+	BranchProtection    string   `yaml:"branch_protection,omitempty"`
+	DestinationBranches []string `yaml:"destination_branches,omitempty"`
+	Message             string   `yaml:"message,omitempty"`
+	AuthorID            string   `yaml:"author_id,omitempty"`
+	AuthorEmail         string   `yaml:"author_email,omitempty"`
+	Path                []string `yaml:"path,omitempty"`
 }
 
 type GithubPayload struct {

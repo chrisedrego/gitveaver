@@ -102,37 +102,47 @@ func InSyncForce(client *github.Client, ctx context.Context, owner, repo, source
 
 }
 
-func Remove(client *github.Client, ctx context.Context, owner, repo string, veave *veave.Veaver, RepGetOptions github.RepositoryContentGetOptions) {
+func Remove(client *github.Client, ctx context.Context, owner, repo string, Rule veave.Rules, RepGetOptions github.RepositoryContentGetOptions) {
 	// Direct get the file path and perform delete operation on that path
 	// adding to .gitignore files list
-	for index, _ := range veave.Rules {
+	RepGetOptions.Ref = Rule.SourceBranch
 
-	}
-	RepGetOptions.Ref = branch
-	FileContent, _, _, err := client.Repositories.GetContents(ctx, owner, repo, filepath, &RepGetOptions)
-	if err != nil {
-		fmt.Println("Error:", err)
-	}
-	var CommitMessage, SHA, Branch *string
-	var Author *github.CommitAuthor
-	var CommitAuthor *github.CommitAuthor
+	for fileIndex, _ := range Rule.Path {
+		fmt.Println("File to Delete", Rule.Path[fileIndex])
+		filePath := Rule.Path[fileIndex]
+		FileContent, _, _, err := client.Repositories.GetContents(ctx, owner, repo, filePath, &RepGetOptions)
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
+		var CommitMessage, Branch *string
+		CommitMessage = &Rule.Message
+		Branch = &Rule.SourceBranch
+		Author := new(github.CommitAuthor)
+		Author.Email = &Rule.AuthorEmail
+		Author.Login = &Rule.AuthorID
+		Author.Name = &Rule.Name
 
-	DeleteFileOpts := &github.RepositoryContentFileOptions{
-		Message:   CommitMessage,
-		Content:   []byte{},
-		SHA:       SHA,
-		Branch:    Branch,
-		Author:    Author,
-		Committer: CommitAuthor,
-	}
-	DeleteFileOpts.SHA = FileContent.SHA
-	fmt.Println(DeleteFileOpts)
-	// FileContent.SHA
-	DeleteContent, _, _, error := client.Repositories.DeleteFile(ctx, owner, repo, filepath, DeleteFileOpts)
-	if error != nil {
-		fmt.Println("Error:", error)
-	}
+		CommitAuthor := new(github.CommitAuthor)
 
+		CommitAuthor.Email = &Rule.AuthorEmail
+		CommitAuthor.Login = &Rule.AuthorID
+		CommitAuthor.Name = &Rule.Name
+
+		DeleteFileOpts := github.RepositoryContentFileOptions{
+			Message:   CommitMessage,
+			Content:   []byte{},
+			SHA:       FileContent.SHA,
+			Branch:    Branch,
+			Author:    Author,
+			Committer: CommitAuthor,
+		}
+		// DeleteFileOpts := new(github.RepositoryContentFileOptions)
+
+		_, _, error := client.Repositories.DeleteFile(ctx, owner, repo, filePath, &DeleteFileOpts)
+		if error != nil {
+			fmt.Println("Error:", error)
+		}
+	}
 }
 
 func CheckIsContributor(client *github.Client, ctx context.Context, owner, repo string, userlist []string) (bool, error) {

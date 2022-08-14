@@ -79,7 +79,7 @@ func EvalChecker(client *github.Client, veave *veave.Veaver, ctx context.Context
 			git.InSyncForce(client, ctx, owner, repo, veave.Rules[index].SourceBranch, veave.Rules[index].DestinationBranches, veave.Rules[index].BranchProtection)
 		case "removal":
 			fmt.Println("mode: removal")
-			git.Remove(client, ctx, owner, repo, veave, github.RepositoryContentGetOptions{})
+			git.Remove(client, ctx, owner, repo, veave.Rules[index], github.RepositoryContentGetOptions{})
 		}
 	}
 }
