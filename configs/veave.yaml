@@ -1,10 +1,12 @@
 rules:
   - name: "sync-master-to-demo"
     mode: in-sync
-    source_branch: master
+    source_branch: dummy
     destination_rules:
-    - name: "demo"
+    - name: "ci_files"
+      destination_branch: "ins"
+      exclude_file: 
+      - "file_a"
+      - "file_b"
       exclude dir:
       - ".pipeline"
-      exclude_file: 
-      - ".gitignore"

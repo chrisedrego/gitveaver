@@ -2,6 +2,7 @@ package git
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"os"
@@ -12,11 +13,31 @@ import (
 	"github.com/google/go-github/github"
 )
 
-func InSync() {
-	// InSync between same
-	// git clone
-	// git merge source to destination
-	// git commit && git push
+func InSync(client *github.Client, ctx context.Context, owner, repo string, Rule veave.Rules, RepGetOptions github.RepositoryContentGetOptions) {
+	// Read/GetContent/TempCopy - Destination files
+	InSyncForce(client, ctx, owner, repo)
+	var FileArray []byte
+	for InSyncIndex, Rule := range Rule.DestinationRules {
+		fmt.Println("Processing Destination RuleID:", InSyncIndex)
+		for _, ExcludedFile := range Rule.ExcludeFile {
+			fmt.Println("Excluded File", ExcludedFile)
+		}
+	}
+
+	FileContent, _, _, err := client.Repositories.GetContents(ctx, owner, repo, filePath, &RepGetOptions)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+
+	rawDecodedData, err := base64.StdEncoding.DecodeString(*FileContent.Content)
+	if err != nil {
+		panic(err)
+	}
+	FileArray = FileArray
+
+	// Remove
+	// InsyncForce
+	// Addfiles
 }
 
 func DeleteBranch(client *github.Client, ctx context.Context, owner, repo, branch string) (*github.Response, error) {

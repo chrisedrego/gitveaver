@@ -74,6 +74,7 @@ func EvalChecker(client *github.Client, veave *veave.Veaver, ctx context.Context
 			fmt.Println("mode: sync")
 		case "in-sync":
 			fmt.Println("mode: in-sync")
+			git.InSync(client, ctx, owner, repo, veave.Rules[index], github.RepositoryContentGetOptions{})
 		case "in-sync-force":
 			fmt.Println("mode: in-sync-force")
 			git.InSyncForce(client, ctx, owner, repo, veave.Rules[index].SourceBranch, veave.Rules[index].DestinationBranches, veave.Rules[index].BranchProtection)

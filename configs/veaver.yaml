@@ -38,7 +38,8 @@ rules:
       exclude dir:
       - ".pipeline"
       exclude_file: 
-      - ".gitignore"
+      - "file_a"
+      - "file_b"
 
   - name: "sync-master-to-v1"
     mode: in-sync-force
