@@ -1,9 +1,10 @@
 rules:
-  - name: "remove-credentials"
-    mode: removal
+  - name: "sync-master-to-demo"
+    mode: in-sync
     source_branch: master
-    message: "Removal GitVeaver Secure Shield."
-    author_id: chrisedrego
-    author_email: chrisedrego@gmail.com
-    path:
-    - "credentials"
+    destination_rules:
+    - name: "demo"
+      exclude dir:
+      - ".pipeline"
+      exclude_file: 
+      - ".gitignore"
